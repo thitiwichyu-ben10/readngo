@@ -1,0 +1,773 @@
+openapi: 3.1.0
+info:
+  title: LangMind File Generator API
+  description: Create DOCX, XLSX, PDF (Chromium HTML renderer) and PPTX files, plus
+    persistent business long-term memory and quotation document extraction/review
+    backed by PostgreSQL.
+  version: 1.3.0
+paths:
+  /health:
+    get:
+      summary: Health
+      operationId: health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /create-file:
+    post:
+      summary: Create File
+      operationId: create_file_create_file_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFileRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /download/{file_id}:
+    get:
+      summary: Download File
+      operationId: download_file_download__file_id__get
+      parameters:
+      - name: file_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: File Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /memory/health:
+    get:
+      tags:
+      - Business Memory
+      summary: Memory Health
+      operationId: memory_health_memory_health_get
+      parameters: []
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /memory:
+    post:
+      tags:
+      - Business Memory
+      summary: Save Memory
+      operationId: save_memory_memory_post
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemorySaveRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /memory/bulk:
+    post:
+      tags:
+      - Business Memory
+      summary: Save Memory Bulk
+      operationId: save_memory_bulk_memory_bulk_post
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemoryBulkRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /memory/search:
+    get:
+      tags:
+      - Business Memory
+      summary: Search Memory
+      operationId: search_memory_memory_search_get
+      parameters:
+      - name: workspace_id
+        in: query
+        required: false
+        schema:
+          type: string
+          default: default
+          title: Workspace Id
+      - name: query
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Query
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /memory/{memory_id}:
+    get:
+      tags:
+      - Business Memory
+      summary: Get Memory
+      operationId: get_memory_memory__memory_id__get
+      parameters:
+      - name: memory_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Memory Id
+      - name: workspace_id
+        in: query
+        required: false
+        schema:
+          type: string
+          default: default
+          title: Workspace Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+    patch:
+      tags:
+      - Business Memory
+      summary: Update Memory
+      operationId: update_memory_memory__memory_id__patch
+      parameters:
+      - name: memory_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Memory Id
+      - name: workspace_id
+        in: query
+        required: false
+        schema:
+          type: string
+          default: default
+          title: Workspace Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemoryUpdateRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+    delete:
+      tags:
+      - Business Memory
+      summary: Delete Memory
+      operationId: delete_memory_memory__memory_id__delete
+      parameters:
+      - name: memory_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Memory Id
+      - name: workspace_id
+        in: query
+        required: false
+        schema:
+          type: string
+          default: default
+          title: Workspace Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /memory/{memory_id}/history:
+    get:
+      tags:
+      - Business Memory
+      summary: Memory History
+      operationId: memory_history_memory__memory_id__history_get
+      parameters:
+      - name: memory_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Memory Id
+      - name: workspace_id
+        in: query
+        required: false
+        schema:
+          type: string
+          default: default
+          title: Workspace Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /quotation/extract:
+    post:
+      tags:
+      - Quotation AI
+      summary: Quotation Extract
+      operationId: quotation_extract_quotation_extract_post
+      parameters:
+      - name: workspace_id
+        in: query
+        required: false
+        schema:
+          type: string
+          default: default
+          title: Workspace Id
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_quotation_extract_quotation_extract_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /quotation/drafts/{draft_id}:
+    get:
+      tags:
+      - Quotation AI
+      summary: Quotation Get Draft
+      operationId: quotation_get_draft_quotation_drafts__draft_id__get
+      parameters:
+      - name: draft_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Draft Id
+      - name: workspace_id
+        in: query
+        required: false
+        schema:
+          type: string
+          default: default
+          title: Workspace Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+    patch:
+      tags:
+      - Quotation AI
+      summary: Quotation Update Draft
+      operationId: quotation_update_draft_quotation_drafts__draft_id__patch
+      parameters:
+      - name: draft_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Draft Id
+      - name: workspace_id
+        in: query
+        required: false
+        schema:
+          type: string
+          default: default
+          title: Workspace Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuotationDraftUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /quotation/drafts/{draft_id}/confirm:
+    post:
+      tags:
+      - Quotation AI
+      summary: Quotation Confirm
+      operationId: quotation_confirm_quotation_drafts__draft_id__confirm_post
+      parameters:
+      - name: draft_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Draft Id
+      - name: workspace_id
+        in: query
+        required: false
+        schema:
+          type: string
+          default: default
+          title: Workspace Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuotationConfirmRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /quotation/{quotation_id}:
+    get:
+      tags:
+      - Quotation AI
+      summary: Quotation Get
+      operationId: quotation_get_quotation__quotation_id__get
+      parameters:
+      - name: quotation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Quotation Id
+      - name: workspace_id
+        in: query
+        required: false
+        schema:
+          type: string
+          default: default
+          title: Workspace Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+components:
+  schemas:
+    Body_quotation_extract_quotation_extract_post:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_quotation_extract_quotation_extract_post
+    CreateFileRequest:
+      properties:
+        filename:
+          type: string
+          maxLength: 120
+          minLength: 1
+          title: Filename
+          description: Output filename, with or without extension
+        format:
+          type: string
+          title: Format
+          description: docx, xlsx, pdf or pptx
+        content:
+          type: string
+          minLength: 1
+          title: Content
+          description: Markdown content; PPTX also accepts a JSON presentation spec
+      type: object
+      required:
+      - filename
+      - format
+      - content
+      title: CreateFileRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    MemoryBulkRequest:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/MemorySaveRequest'
+          type: array
+          maxItems: 100
+          minItems: 1
+          title: Items
+      type: object
+      required:
+      - items
+      title: MemoryBulkRequest
+    MemorySaveRequest:
+      properties:
+        workspace_id:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Workspace Id
+          default: default
+        category:
+          type: string
+          title: Category
+          description: customers, products, pricing, quotations, suppliers, policies,
+            projects, contacts, other
+        title:
+          type: string
+          maxLength: 300
+          minLength: 1
+          title: Title
+        content:
+          type: string
+          maxLength: 50000
+          minLength: 1
+          title: Content
+          description: Human-readable facts, concise summary, or source text
+        data:
+          additionalProperties: true
+          type: object
+          title: Data
+          description: Structured business fields, e.g. customer_name, sku, price,
+            currency
+        entity_key:
+          anyOf:
+          - type: string
+            maxLength: 200
+          - type: 'null'
+          title: Entity Key
+          description: Stable business identifier such as customer code or SKU
+        source_filename:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Source Filename
+        source_type:
+          anyOf:
+          - type: string
+            maxLength: 50
+          - type: 'null'
+          title: Source Type
+          description: chat, pdf, docx, xlsx, image, email, etc.
+        source_date:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Source Date
+        tags:
+          items:
+            type: string
+          type: array
+          maxItems: 30
+          title: Tags
+        confidence:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Confidence
+        allow_update:
+          type: boolean
+          title: Allow Update
+          description: Must be true to replace an existing record with the same category
+            and entity_key
+          default: false
+      type: object
+      required:
+      - category
+      - title
+      - content
+      title: MemorySaveRequest
+    MemoryUpdateRequest:
+      properties:
+        title:
+          anyOf:
+          - type: string
+            maxLength: 300
+            minLength: 1
+          - type: 'null'
+          title: Title
+        content:
+          anyOf:
+          - type: string
+            maxLength: 50000
+            minLength: 1
+          - type: 'null'
+          title: Content
+        data:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Data
+        tags:
+          anyOf:
+          - items:
+              type: string
+            type: array
+            maxItems: 30
+          - type: 'null'
+          title: Tags
+        source_filename:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Source Filename
+        source_type:
+          anyOf:
+          - type: string
+            maxLength: 50
+          - type: 'null'
+          title: Source Type
+        confidence:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Confidence
+        change_reason:
+          type: string
+          maxLength: 500
+          title: Change Reason
+          default: Updated by LangMind Agent
+      type: object
+      title: MemoryUpdateRequest
+    QuotationConfirmRequest:
+      properties:
+        reviewed:
+          type: boolean
+          title: Reviewed
+          description: 'Must be true: user has reviewed the extracted fields'
+        confirm_unmatched_items:
+          type: boolean
+          title: Confirm Unmatched Items
+          description: Explicitly allow saving items that could not be matched to
+            the product memory
+          default: false
+        reviewer_note:
+          anyOf:
+          - type: string
+            maxLength: 2000
+          - type: 'null'
+          title: Reviewer Note
+      type: object
+      required:
+      - reviewed
+      title: QuotationConfirmRequest
+    QuotationDraftUpdate:
+      properties:
+        extracted_data:
+          additionalProperties: true
+          type: object
+          title: Extracted Data
+        reviewer_note:
+          anyOf:
+          - type: string
+            maxLength: 2000
+          - type: 'null'
+          title: Reviewer Note
+      type: object
+      required:
+      - extracted_data
+      title: QuotationDraftUpdate
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Use the MEMORY_API_KEY configured on the Render service.
